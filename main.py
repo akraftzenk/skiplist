@@ -26,15 +26,17 @@ class SkipList:
                 pointer = pointer.next
             level -= 1
             pointer = pointer.below
-
         while pointer.next is not None and pointer.next.value < element:
             pointer = pointer.next
         new_node = Node(pointer.next, pointer, element, None, None)
+        if pointer.next is not None:
+            pointer.next.prev = new_node
         pointer.next = new_node
 
         level = 0
         last_level_node = new_node
-        while self.__coin_flip():
+        done = False
+        while self.__coin_flip() and not done:
             level += 1
             if level > self.height:
                 new_level_head = Node(None, None, None, self.levels[self.height], None)
@@ -44,13 +46,16 @@ class SkipList:
 
                 temp = Node(None, new_level_head, element, last_level_node, None)
                 last_level_node.above = temp
-                last_level_node = temp
-                new_level_head.next = last_level_node
+                new_level_head.next = temp
+                done = True
             else:
                 while pointer.above is None:
                     pointer = pointer.prev
                 pointer = pointer.above
+
                 new_level_node = Node(pointer.next, pointer, element, last_level_node, None)
+                if pointer.next is not None:
+                    pointer.next.prev = new_level_node
                 pointer.next = new_level_node
                 last_level_node.above = new_level_node
                 last_level_node = new_level_node
@@ -80,19 +85,15 @@ class SkipList:
         print("Total height: " + self.height.__str__())
         for i in range(self.height + 1):
             pointer = self.levels[i].next
+            print(" ")
             print("h: " + i.__str__())
             while pointer is not None:
-                print(pointer.value)
-                if i > 0:
-                    print("below : " + pointer.below.value.__str__())
-
-                if pointer.above is not None:
-                    print("above : " + pointer.above.value.__str__())
+                print(pointer.value, end=" ")
                 pointer = pointer.next
 
 
 if __name__ == '__main__':
-    skipList = SkipList([1, 2, 3, 4, 5, 6, 7, 8, 10, 15])
+    skipList = SkipList(random.sample(range(1, 101), 100))
 
     # print(skipList.print())
     # skipList.add(1)
@@ -115,7 +116,7 @@ if __name__ == '__main__':
     #
     skipList.print()
     print("\n")
-    skipList2 = SkipList([])
-    skipList2.add(10)
-    skipList2.add(0)
-    skipList2.print()
+    # skipList2 = SkipList([])
+    # skipList2.add(10)
+    # skipList2.add(0)
+    # skipList2.print()
