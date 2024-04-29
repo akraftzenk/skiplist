@@ -61,7 +61,17 @@ class SkipList:
                 last_level_node = new_level_node
 
     def remove(self, element):
-        print("remove")
+        pointer = self.get(element)
+
+        while pointer is not None:
+            if pointer.prev is not None and pointer.next is not None:
+                pointer.prev.next = pointer.next
+
+            if pointer.above is not None:
+                pointer.above.below = None
+                pointer = pointer.above
+            else:
+                pointer = None
 
     def get(self, element):
         pointer = self.levels[self.height]
@@ -116,6 +126,14 @@ if __name__ == '__main__':
     #
     skipList.print()
     print("\n")
+
+    # for i in range(10):
+    #     numToRemove = random.randint(1, 100)
+    #     print("removing " + str(numToRemove))
+    #     skipList.remove(numToRemove)
+    #     skipList.print()
+    #     print("\n")
+
     # skipList2 = SkipList([])
     # skipList2.add(10)
     # skipList2.add(0)
