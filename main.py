@@ -14,7 +14,10 @@ class SkipList:
     def __init__(self, list_to_convert):
         self.height = 0
         self.level_zero_head = Node(None, None, None, None, None)
+        self.level_one_head = Node(None, None, None, self.level_zero_head, None)
+        self.level_zero_head.above = self.level_one_head
         self.levels = [self.level_zero_head]
+        self.levels.append(self.level_one_head)
         for item in list_to_convert:
             self.add(item)
 
@@ -25,7 +28,9 @@ class SkipList:
             while pointer.next is not None and pointer.next.value < element:
                 pointer = pointer.next
             level -= 1
-            pointer = pointer.below
+            if pointer.below is not None:
+                pointer = pointer.below
+
         while pointer.next is not None and pointer.next.value < element:
             pointer = pointer.next
         new_node = Node(pointer.next, pointer, element, None, None)
@@ -41,12 +46,13 @@ class SkipList:
             if level > self.height:
                 new_level_head = Node(None, None, None, self.levels[self.height], None)
                 self.levels.append(new_level_head)
-                self.levels[self.height].above = new_level_head
                 self.height += 1
+                self.levels[self.height].above = new_level_head
 
-                temp = Node(None, new_level_head, element, last_level_node, None)
+
+                temp = Node(None, self.levels[self.height], element, last_level_node, None)
                 last_level_node.above = temp
-                new_level_head.next = temp
+                self.levels[self.height].next = temp
                 done = True
             else:
                 while pointer.above is None:
@@ -89,7 +95,8 @@ class SkipList:
             while pointer.next is not None and pointer.next.value < element:
                 pointer = pointer.next
             level -= 1
-            pointer = pointer.below
+            if pointer.below is not None:
+                pointer = pointer.below
         while pointer.next is not None and pointer.next.value < element:
             pointer = pointer.next
         if pointer.next is None or pointer.next.value is not element:
@@ -102,9 +109,9 @@ class SkipList:
 
     def print(self):
         print("Total height: " + self.height.__str__())
-        height = self.height
+        height = self.height+1
         while height >= 0:
-            pointer = self.levels[height].next
+            pointer = self.levels[height]
             print(" ")
             print("h: " + height.__str__())
             while pointer is not None:
