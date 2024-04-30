@@ -62,18 +62,22 @@ class SkipList:
 
     def remove(self, element):
         pointer = self.get(element)
-
         while pointer is not None:
             if pointer.prev is not None:
+                if pointer.next is not None:
+                    pointer.next.prev = pointer.prev
                 pointer.prev.next = pointer.next
 
             if pointer.above is not None:
                 pointer.above.below = None
                 pointer = pointer.above
             else:
+                if pointer.next is None:
+                    pointer.prev.next = None
                 pointer = None
         pointer = self.levels[self.height]
         while pointer.next is None:
+            pointer.below.above = None
             self.levels.pop(self.height)
             self.height -= 1
             pointer = self.levels[self.height]
@@ -98,18 +102,21 @@ class SkipList:
 
     def print(self):
         print("Total height: " + self.height.__str__())
-        for i in range(self.height + 1):
-            pointer = self.levels[i].next
+        height = self.height
+        while height >= 0:
+            pointer = self.levels[height].next
             print(" ")
-            print("h: " + i.__str__())
+            print("h: " + height.__str__())
             while pointer is not None:
                 print(pointer.value, end=" ")
                 pointer = pointer.next
+            height -= 1
 
 
 if __name__ == '__main__':
     skipList = SkipList(random.sample(range(1, 101), 100))
     skipList.print()
     print("\n")
+    skipList.remove(skipList.levels[skipList.height].next.value)
     skipList.remove(skipList.levels[skipList.height].next.value)
     skipList.print()
