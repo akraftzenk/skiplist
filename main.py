@@ -108,7 +108,6 @@ class SkipList:
         return random.choice([0, 1]) == 0
 
     def print(self):
-        print("Total height: " + self.height.__str__())
         height = self.height+1
         while height >= 0:
             pointer = self.levels[height]
@@ -124,6 +123,10 @@ if __name__ == '__main__':
     skipList = SkipList(random.sample(range(1, 101), 100))
     skipList.print()
     print("\n")
+    skipList.add(101)
+    skipList.print()
+    print("\n")
+    print(skipList.get(50).value)
     skipList.remove(skipList.levels[skipList.height].next.value)
     skipList.remove(skipList.levels[skipList.height].next.value)
     skipList.print()
